@@ -20,6 +20,14 @@ public class Audio {
 	
 	private double lastPlayStart;
 	
+	//necessary abstraction to avoid bugs with audio library
+	//timeCurrentTimeSet -> time the (double currentTime) was set
+	//currentTime -> the current 'time' set by client
+	//timeLastPlayed -> time the audio was last played
+	private double currentTime;
+	private long timeCurrentTimeSet;
+	private long timeLastPlayed;
+	
 	private double selectedRegionStart;
 	private double selectedRegionEnd;
 	
@@ -82,7 +90,7 @@ public class Audio {
 	
 	//length in ms
 	public double length() {
-		return samp.getLength();
+		return samp.getLength()-bufferTime();
 	}
 	
 	public String file() {
@@ -107,7 +115,14 @@ public class Audio {
 		}
 	}
 	
+	public void setTime(double time) {
+		currentTime = time;
+		timeCurrentTimeSet = System.currentTimeMillis();
+	}
+	
 	public void play(double start) {
+		timeLastPlayed = System.currentTimeMillis();
+		
 		if(start >= length()-2 || start < 0)
 			return;
 		
@@ -118,7 +133,7 @@ public class Audio {
 	}
 	
 	public void play() {
-		play(0);
+		play(currentTime);
 	}
 	
 	public double playStart() {
@@ -135,12 +150,17 @@ public class Audio {
 	}
 	
 	public double time() {
-		double point = sp.getPosition()-bufferTime();
-		if(point < lastPlayStart) {
-			return lastPlayStart;
+		if(timeLastPlayed > timeCurrentTimeSet) {
+			double point = sp.getPosition()-bufferTime();
+			if(point < lastPlayStart) {
+				return lastPlayStart;
+			}
+			else
+				return point;
 		}
-		else
-			return point;
+		else {
+			return currentTime;
+		}
 	}
 	
 	public static String msString(double ms) {

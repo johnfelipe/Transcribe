@@ -80,7 +80,7 @@ public class AudioVisual extends JPanel {
 	public static final Color SELECTED_SHADE_COLOR = new Color(30,30,30,50);
 	public static final Color SELECTED_OUTLINE_COLOR = new Color(30,30,30,150);
 	public static final Color BEAT_COLOR = new Color(50, 88, 50);
-	public static final Color PLAYBACK_COLOR = new Color(180, 0, 0);
+	public static final Color PLAYBACK_COLOR = new Color(120, 30, 30);
 	
 	private static final Font PREVIEW_FONT = new Font("Consolas", 13, 13);
 	
@@ -185,7 +185,7 @@ public class AudioVisual extends JPanel {
 			g.drawRect(startSelX, 0, endSelX-startSelX, getHeight());
 		}
 		
-		if(aud.playing() && aud.time() >= aud.playStart()) {
+		if(!aud.playing() || aud.time() >= aud.playStart()) {
 			int point = mapX(aud.time());
 			g.setColor(PLAYBACK_COLOR);
 			g.drawLine(point, 0, point, getHeight());
@@ -210,9 +210,6 @@ public class AudioVisual extends JPanel {
 				
 				Color col = aud.typeManager().get(seg.segmentType()).color();
 				col = new Color(col.getRed(), col.getGreen(), col.getBlue(), 80);
-				
-				if(time >= seg.start() && time <= seg.end())
-					col = col.darker();
 				
 				g.setColor(col);
 				g.fillRect(mapX(seg.start()), 0, mapX(seg.end())-mapX(seg.start()), getHeight());

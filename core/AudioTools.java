@@ -55,16 +55,19 @@ public class AudioTools {
 	
 	
 	
-	public void selectRegion(double start, double end) {
+	//returns if selected segment
+	public boolean selectRegion(double start, double end) {
 		Set<Segment> segments = aud.segments();
 		
 		double ds = snap(start), de = snap(end);
 		boolean dsChanged = false, deChanged = false;
+		boolean selectedSegment = false;
 		
 		for(Segment seg : segments) {
 			if(start >= seg.start() && end <= seg.end()) {
 				ds = seg.start();
 				de = seg.end();
+				selectedSegment = true;
 				break;
 			}
 			else if(start < seg.end() && end > seg.end()) {
@@ -91,6 +94,8 @@ public class AudioTools {
 		for(RegionChangeCallback r : rem) {
 			selectChangeCallbacks.remove(r);
 		}
+		
+		return selectedSegment;
 	}
 	
 	//returns segments ordered from earliest to latest
@@ -214,7 +219,6 @@ public class AudioTools {
 	
 	public void playToggle(final Runnable tickCallback, final boolean endAtRegionEnd) {
 		if(aud.playing()) {
-			System.out.println("Stopping"); //DEBUG
 			aud.stop();
 			
 			if(atd != null) {
@@ -230,6 +234,7 @@ public class AudioTools {
 						aud.stop();
 						atd.kill();
 						atd = null;
+						aud.setTime(aud.getSelectedRegionStart());
 					}
 					
 					if(tickCallback != null) {
@@ -238,7 +243,7 @@ public class AudioTools {
 				}
 			};
 			atd.start();
-			aud.play(aud.getSelectedRegionStart());
+			aud.play();
 		}
 	}
 }

@@ -325,6 +325,12 @@ public class AudioVisualController extends JPanel {
 					}
 					
 					at.selectRegion(av.unmapX(startX), av.unmapX(endX));
+					
+					//OPT perhaps allow timer movement during play somehow. Have to test how intuitive this is
+					if(!av.getAudio().playing()) {
+						av.getAudio().setTime(av.unmapX(startX));
+					}
+					
 					sav.repaint();
 					av.repaint();
 				}
@@ -381,87 +387,8 @@ public class AudioVisualController extends JPanel {
 				//button for merging segments
 				final JButton mergeSegments = new JButton("<html><a style='text-decoration: underline;'>M</a>erge</html>");
 				mergeSegments.setPreferredSize(new Dimension(105, 26));
-				mergeSegments.addActionListener(new ActionListener() {
-					private boolean active = false;
-					
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						final Segment base = at.selectedSegment();
-						
-						if(!active) {
-							if(base == null) {
-								JOptionPane.showMessageDialog(AudioVisualController.this, "No base segment is selected.");
-								return;
-							}
-							
-							mergeSegments.setText("Merge with..");
-							active = true;
-							
-							at.regionChangeCallback(new AudioTools.RegionChangeCallback() {
-								@Override
-								public boolean run() {
-									if(!active) {
-										return false;
-									}
-									
-									Segment sel = at.selectedSegment();
-						
-									if(sel == base) {
-										JOptionPane.showMessageDialog(AudioVisualController.this, "You cannot merge the same segment.");
-										return false;
-									}
-									else if(sel == null) {
-										return true;
-									}
-									else {
-										final String with = JOptionPane.showInputDialog("Merge with..", " ");
-										final List<Segment> segs = at.orderedSegments(at.selectSegments(base, sel));
-										final Audio aud = av.getAudio();
-									
-										String transcript = "";
-										for(int i = 0; i < segs.size(); i++) {
-											Segment s = segs.get(i);
-											
-											if(i < segs.size() - 1) {
-												transcript += s.transcript() + with;
-											}
-											else {
-												transcript += s.transcript();
-											}
-											
-											if(s != base) {
-												aud.segments().remove(s);
-												continue;
-											}
-										}
-										base.transcript(transcript);
-										base.setRange(segs.get(0).start(), segs.get(segs.size()-1).end());
-										
-										transcriptPanel.repaint();
-										active = false;
-										mergeSegments.setText("<html><a style='text-decoration: underline;'>M</a>erge</html>");
-										
-										av.repaint();
-										sav.repaint();
-										
-										EventQueue.invokeLater(new Runnable() {
-											public void run() {
-												aud.setSelectedRegion(base.start(), base.end());
-												av.repaint();
-												sav.repaint();
-											}
-										});
-										return false;
-									}
-								}
-							});
-						}
-						else {
-							mergeSegments.setText("<html><a style='text-decoration: underline;'>M</a>erge</html>");
-							active = false;
-						}
-					}
-				});
+				mergeSegments.addActionListener(
+						new MergeSegmentActionListener(mergeSegments,AudioVisualController.this,at,av,sav,transcriptPanel));
 				
 				
 				
@@ -628,6 +555,10 @@ public class AudioVisualController extends JPanel {
 						case KeyEvent.VK_D:
 						case KeyEvent.VK_V:
 						case KeyEvent.VK_B:
+							break;
+						case KeyEvent.VK_M:
+							(new MergeSegmentActionListener(mergeSegments,AudioVisualController.this,at,av,sav,transcriptPanel))
+								.actionPerformed(null);
 							break;
 							
 						default:
