@@ -5,6 +5,8 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ComponentAdapter;
@@ -102,6 +104,7 @@ public class TranscriptPanel extends JPanel {
 		text.setFont(TRANSCRIPT_FONT);
 		currentSeg = null;
 		
+		text.setLineWrap(true);
 		text.setWrapStyleWord(true);
 		text.setMargin(new Insets(5, 5, 5, 5));
 		text.addKeyListener(new KeyAdapter() {

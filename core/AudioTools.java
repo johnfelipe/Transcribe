@@ -234,7 +234,6 @@ public class AudioTools {
 						aud.stop();
 						atd.kill();
 						atd = null;
-						aud.setTime(aud.getSelectedRegionStart());
 					}
 					
 					if(tickCallback != null) {

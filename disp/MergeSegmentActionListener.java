@@ -67,6 +67,11 @@ public class MergeSegmentActionListener implements ActionListener {
 					}
 					else {
 						final String with = JOptionPane.showInputDialog("Merge with..", " ");
+						if(with == null) {
+							mergeSegments.setText("<html><a style='text-decoration: underline;'>M</a>erge</html>");
+							return false;
+						}
+						
 						final List<Segment> segs = at.orderedSegments(at.selectSegments(base, sel));
 						final Audio aud = av.getAudio();
 					
@@ -93,6 +98,7 @@ public class MergeSegmentActionListener implements ActionListener {
 							transcriptPanel.repaint();
 						}
 						
+						//state
 						mergeSegments.setText("<html><a style='text-decoration: underline;'>M</a>erge</html>");
 						
 						av.repaint();

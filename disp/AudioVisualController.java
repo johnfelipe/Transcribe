@@ -64,6 +64,7 @@ public class AudioVisualController extends JPanel {
 	private double pStartVisu = -1;
 	private double pEndVisu = -1;
 	public CompileSettings settings;
+	private IntervalOperationChooser ioc;
 	
 	//TODO state saving for undo / redo
 	private String selectedSegmentType = "$default";
@@ -112,6 +113,9 @@ public class AudioVisualController extends JPanel {
 	public AudioVisualController(AudioVisual avi, AudioTools ato) {
 		this.av = avi;
 		this.at = ato;
+		this.ioc = new IntervalOperationChooser(avi.getAudio());
+		this.ioc.setSize(300, 200);
+		
 		this.settings = new CompileSettings(avi.getAudio());
 		this.settings.setSize(300, 400);
 		
@@ -307,6 +311,16 @@ public class AudioVisualController extends JPanel {
 		}
 	}
 	
+	//rewind start point to the beginning of the segment, useful shortcut.
+	private void startPointToSegmentStart() {
+		Segment sel = at.selectedSegment();
+		if(sel != null) {
+			av.getAudio().startPoint(sel.start());
+			av.repaint();
+			sav.repaint();
+		}
+	}
+	
 	private JPanel createControlsPanel() {
 		return new JPanel() {
 			private static final long serialVersionUID = 2054596320493442120L;
@@ -327,9 +341,7 @@ public class AudioVisualController extends JPanel {
 					at.selectRegion(av.unmapX(startX), av.unmapX(endX));
 					
 					//OPT perhaps allow timer movement during play somehow. Have to test how intuitive this is
-					if(!av.getAudio().playing()) {
-						av.getAudio().setTime(av.unmapX(startX));
-					}
+					av.getAudio().startPoint(av.unmapX(startX));
 					
 					sav.repaint();
 					av.repaint();
@@ -552,7 +564,6 @@ public class AudioVisualController extends JPanel {
 						//reserved (for convenience, etc.)
 						case KeyEvent.VK_C:
 						case KeyEvent.VK_U:
-						case KeyEvent.VK_D:
 						case KeyEvent.VK_V:
 						case KeyEvent.VK_B:
 							break;
@@ -560,7 +571,12 @@ public class AudioVisualController extends JPanel {
 							(new MergeSegmentActionListener(mergeSegments,AudioVisualController.this,at,av,sav,transcriptPanel))
 								.actionPerformed(null);
 							break;
-							
+						case KeyEvent.VK_F:
+							startPointToSegmentStart();
+							break;
+						case KeyEvent.VK_I:
+							ioc.setVisible(true);
+							break;
 						default:
 							if(!transcriptPanel.textAreaHasFocus()) {
 								transcriptPanel.textAreaFocus();
@@ -579,11 +595,6 @@ public class AudioVisualController extends JPanel {
 							break;
 						case 'c':
 							at.newSegmentAtSelection(selectedSegmentType);
-							av.repaint();
-							sav.repaint();
-							break;
-						case 'd':
-							at.deleteSegment();
 							av.repaint();
 							sav.repaint();
 							break;

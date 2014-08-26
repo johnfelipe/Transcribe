@@ -24,9 +24,7 @@ public class Audio {
 	//timeCurrentTimeSet -> time the (double currentTime) was set
 	//currentTime -> the current 'time' set by client
 	//timeLastPlayed -> time the audio was last played
-	private double currentTime;
-	private long timeCurrentTimeSet;
-	private long timeLastPlayed;
+	private double startPoint;
 	
 	private double selectedRegionStart;
 	private double selectedRegionEnd;
@@ -56,6 +54,14 @@ public class Audio {
 	
 	public void close() {
 		ac.stop();
+	}
+	
+	public double startPoint() {
+		return startPoint;
+	}
+	
+	public void startPoint(double v) {
+		startPoint = v;
 	}
 	
 	public double getSelectedRegionStart() {
@@ -114,15 +120,8 @@ public class Audio {
 			e.printStackTrace();
 		}
 	}
-	
-	public void setTime(double time) {
-		currentTime = time;
-		timeCurrentTimeSet = System.currentTimeMillis();
-	}
-	
-	public void play(double start) {
-		timeLastPlayed = System.currentTimeMillis();
 		
+	public void play(double start) {
 		if(start >= length()-2 || start < 0)
 			return;
 		
@@ -133,11 +132,7 @@ public class Audio {
 	}
 	
 	public void play() {
-		play(currentTime);
-	}
-	
-	public double playStart() {
-		return lastPlayStart;
+		play(startPoint);
 	}
 	
 	public boolean playing() {
@@ -150,17 +145,12 @@ public class Audio {
 	}
 	
 	public double time() {
-		if(timeLastPlayed > timeCurrentTimeSet) {
-			double point = sp.getPosition()-bufferTime();
-			if(point < lastPlayStart) {
-				return lastPlayStart;
-			}
-			else
-				return point;
+		double point = sp.getPosition()-bufferTime();
+		if(point < lastPlayStart) {
+			return lastPlayStart;
 		}
-		else {
-			return currentTime;
-		}
+		else
+			return point;
 	}
 	
 	public static String msString(double ms) {
