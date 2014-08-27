@@ -114,7 +114,8 @@ public class AudioVisualController extends JPanel {
 		this.av = avi;
 		this.at = ato;
 		this.ioc = new IntervalOperationChooser(avi.getAudio());
-		this.ioc.setSize(300, 200);
+		this.ioc.setSize(300, 180);
+		ioc.setResizable(false);
 		
 		this.settings = new CompileSettings(avi.getAudio());
 		this.settings.setSize(300, 400);
@@ -576,6 +577,15 @@ public class AudioVisualController extends JPanel {
 							break;
 						case KeyEvent.VK_I:
 							ioc.setVisible(true);
+							ioc.setSegmentType(selectedSegmentType);
+							break;
+						case KeyEvent.VK_A:
+							{
+								Audio aud = av.getAudio();
+								aud.setSelectedRegion(10, aud.length()-10);
+								av.repaint();
+								sav.repaint();
+							}
 							break;
 						default:
 							if(!transcriptPanel.textAreaHasFocus()) {

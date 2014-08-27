@@ -26,7 +26,7 @@ public class DefaultFormat implements Collapse.Format {
 	public static final String CAR_RET_EXPR = "\\r";
 	public static final String TAB_EXPR = "\\t";
 	
-	public static final String DEFAULT_FMT_STRING = "\\type: \\text\\r\\n";
+	public static final String DEFAULT_FMT_STRING = "\\text\\r\\n";
 	
 	private SegmentTypeManager stm;
 	private String formatString;
@@ -40,31 +40,37 @@ public class DefaultFormat implements Collapse.Format {
 		this.formatString = type;
 	}
 	
-	private String format(Segment seg, String str) {
+	private String format(Segment seg, String str, boolean transcript) {
 		Time t = new Time(seg.start());
 		
-		String base = str.replace(TYPE_EXPR, stm.get(seg.segmentType()).name())
-				 .replace(TIME_HH_EXPR, t.hh())
-				 .replace(TIME_MM_EXPR, t.mm())
-				 .replace(TIME_SS_EXPR, t.ss())
-				 .replace(TIME_MS3_EXPR, t.ms3())
-				 .replace(TIME_H_EXPR, t.h())
-				 .replace(TIME_MM_EXPR, t.mm())
-				 .replace(TIME_SS_EXPR, t.ss())
-				 .replace(TIME_MS_EXPR, t.ms())
-				 .replace(LINEFEED_EXPR, "\n")
-				 .replace(CAR_RET_EXPR, "\r")
-				 .replace(TAB_EXPR, "\t");
+		String base = null;
 		
-		if(seg != null) {
-			base = base.replace(TEXT_EXPR, format(null, seg.transcript()));
+		if(transcript) {
+			base = str.replace(TEXT_EXPR, format(seg, seg.transcript(), false));
 		}
+		else {
+			base = str;
+		}
+		
+		base = base.replace(TYPE_EXPR, stm.get(seg.segmentType()).name())
+		 .replace(TIME_HH_EXPR, t.hh())
+		 .replace(TIME_MM_EXPR, t.mm())
+		 .replace(TIME_SS_EXPR, t.ss())
+		 .replace(TIME_MS3_EXPR, t.ms3())
+		 .replace(TIME_H_EXPR, t.h())
+		 .replace(TIME_MM_EXPR, t.mm())
+		 .replace(TIME_SS_EXPR, t.ss())
+		 .replace(TIME_MS_EXPR, t.ms())
+		 .replace(LINEFEED_EXPR, "\n")
+		 .replace(CAR_RET_EXPR, "\r")
+		 .replace(TAB_EXPR, "\t");
 		
 		return base;
 	}
 	
+	
 	@Override
 	public String format(Segment seg) {
-		return format(seg, formatString);
+		return format(seg, formatString, true);
 	}
 }

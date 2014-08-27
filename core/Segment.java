@@ -8,7 +8,7 @@ public class Segment implements Cloneable {
 	private String transcript;
 	
 	public Segment(double startMs, double endMs) {
-		this.startMs = endMs;
+		this.startMs = startMs;
 		this.endMs = endMs;
 		
 		this.transcript = "";

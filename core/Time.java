@@ -19,10 +19,10 @@ public class Time {
 		double seconds = Math.floor((ms-minutes*60000-hours*3600000)/1000);
 		ms = ms - hours*360000 - minutes*60000 - seconds*1000;
 
-		hours = (int)hours;
-		minutes = (int)minutes;
-		seconds = (int)seconds;
-		milliseconds = ms;
+		this.hours = (int)hours;
+		this.minutes = (int)minutes;
+		this.seconds = (int)seconds;
+		this.milliseconds = ms;
 	}
 	
 	public Time() {
