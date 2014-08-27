@@ -44,14 +44,18 @@ public class IntervalOperationChooser extends JFrame {
 	private JTextField format;
 	private JCheckBox preEval;
 	private JSpinner len;
+	private AudioVisualController avc;
+
 	private static final Font formatFont = new Font("Consolas", 14, 14);
 	
 	private String segType = "$default";
 	
 	private Audio aud;
 	
-	public IntervalOperationChooser(Audio aud) {
+	public IntervalOperationChooser(Audio aud, AudioVisualController avc) {
 		this.aud = aud;
+		this.avc = avc;
+		
 		setTitle("Interval Operation");
 		
 		final JButton ok = new JButton("OK");
@@ -183,5 +187,8 @@ public class IntervalOperationChooser extends JFrame {
 				aud.segments().add(seg);
 			}
 		}
+		
+		avc.repaint();
+		setVisible(false);
 	}
 }

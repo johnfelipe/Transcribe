@@ -113,7 +113,7 @@ public class AudioVisualController extends JPanel {
 	public AudioVisualController(AudioVisual avi, AudioTools ato) {
 		this.av = avi;
 		this.at = ato;
-		this.ioc = new IntervalOperationChooser(avi.getAudio());
+		this.ioc = new IntervalOperationChooser(avi.getAudio(), this);
 		this.ioc.setSize(300, 180);
 		ioc.setResizable(false);
 		
@@ -635,5 +635,15 @@ public class AudioVisualController extends JPanel {
 		});
 
 		return tp;
+	}
+	
+	@Override
+	public void repaint() {
+		super.repaint();
+		
+		if(sav != null && av != null) {
+			sav.repaint();
+			av.repaint();
+		}
 	}
 }
